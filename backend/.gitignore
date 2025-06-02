@@ -1,0 +1,49 @@
+# Node dependencies
+node_modules/
+
+# Build output
+dist/
+build/
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment variables
+.env
+.env.*.local
+
+# Jest and testing
+coverage/
+__tests__/tmp/
+jest.config.js
+
+# IDE settings
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Optional: editor swap/lock files
+*.swp
+*.lock
+
+# PM2 logs (if using)
+pids/
+*.pid
+*.seed
+
+# Optional: Mac/Linux/Windows specific files
+*.orig
+
+# Ignore compiled JS from tests if any
+**/*.spec.js
+**/*.test.js
