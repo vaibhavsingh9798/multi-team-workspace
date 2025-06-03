@@ -47,3 +47,5 @@ pids/
 # Ignore compiled JS from tests if any
 **/*.spec.js
 **/*.test.js
+
+/src/generated/prisma
