@@ -14,74 +14,74 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 model Company {
-  id        String     @id @default(uuid())
+  id        String        @id @default(uuid())
   name      String
   teams     Team[]
   users     CompanyUser[]
-  createdAt DateTime   @default(now())
+  createdAt DateTime      @default(now())
 }
 
 model User {
-  id             String           @id @default(uuid())
-  email          String           @unique
-  name           String
-  password       String
-  companies      CompanyUser[]
-  refreshTokens  RefreshToken[]
+  id            String         @id @default(uuid())
+  email         String         @unique
+  name          String
+  password      String
+  companies     CompanyUser[]
+  refreshTokens RefreshToken[]
 }
 
 model CompanyUser {
-  id        String     @id @default(uuid())
-  user      User       @relation(fields: [userId], references: [id])
-  userId    String
-  company   Company    @relation(fields: [companyId], references: [id])
-  companyId String
-  role      Role
-  teams     TeamUser[]
+  id            String     @id @default(uuid())
+  user          User       @relation(fields: [userId], references: [id])
+  userId        String
+  company       Company    @relation(fields: [companyId], references: [id])
+  companyId     String
+  role          Role
+  teams         TeamUser[]
+  assignedTasks Task[]     @relation("TaskAssignee") // <-- back-relation
 }
 
 model Team {
-  id          String     @id @default(uuid())
-  name        String
-  company     Company    @relation(fields: [companyId], references: [id])
-  companyId   String
-  users       TeamUser[]
-  projects    Project[]
+  id        String     @id @default(uuid())
+  name      String
+  company   Company    @relation(fields: [companyId], references: [id])
+  companyId String
+  users     TeamUser[]
+  projects  Project[]
 }
 
 model TeamUser {
-  id        String   @id @default(uuid())
-  team      Team     @relation(fields: [teamId], references: [id])
-  teamId    String
-  user      CompanyUser @relation(fields: [companyUserId], references: [id])
+  id            String      @id @default(uuid())
+  team          Team        @relation(fields: [teamId], references: [id])
+  teamId        String
+  user          CompanyUser @relation(fields: [companyUserId], references: [id])
   companyUserId String
 }
 
 model Project {
-  id        String    @id @default(uuid())
-  name      String
-  team      Team      @relation(fields: [teamId], references: [id])
-  teamId    String
-  tasks     Task[]
+  id     String @id @default(uuid())
+  name   String
+  team   Team   @relation(fields: [teamId], references: [id])
+  teamId String
+  tasks  Task[]
 }
 
 model Task {
-  id          String    @id @default(uuid())
+  id          String       @id @default(uuid())
   title       String
   description String?
   status      String
-  project     Project   @relation(fields: [projectId], references: [id])
+  project     Project      @relation(fields: [projectId], references: [id])
   projectId   String
-  parentId    String?   // for subtasks
-  parent      Task?     @relation("SubTasks", fields: [parentId], references: [id])
-  subtasks    Task[]    @relation("SubTasks")
-  tags        String[]  @default([])
+  parentId    String? // for subtasks
+  parent      Task?        @relation("SubTasks", fields: [parentId], references: [id])
+  subtasks    Task[]       @relation("SubTasks")
+  tags        String[]     @default([])
   activityLog Json?
   attachments Json?
   assigneeId  String?
-  assignee    CompanyUser? @relation(fields: [assigneeId], references: [id])
+  assignee    CompanyUser? @relation("TaskAssignee", fields: [assigneeId], references: [id])
 }
 
 model RefreshToken {
@@ -97,5 +97,3 @@ enum Role {
   MANAGER
   MEMBER
 }
-
-

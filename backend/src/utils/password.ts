@@ -1,6 +1,6 @@
 // backend/src/utils/password.ts
 
-const bcrypt = require("bcrypt")
+import bcrypt from 'bcrypt';
 
 const SALT_ROUNDS = 10;
 
