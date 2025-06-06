@@ -95,7 +95,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const signup = async (name: string, email: string, password: string) => {
     setLoading(true);
     try {
-      const res = await axios.post("/auth/signup", { name, email, password });
+      const res = await axios.post("/auth/register", { name, email, password });
       const { token, user } = res.data;
 
       localStorage.setItem("token", token);
