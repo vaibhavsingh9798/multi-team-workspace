@@ -22,7 +22,6 @@ export const getTasksByProject = async (projectId: string) => {
     where: { projectId },
     include: {
       subtasks: true,
-      activityLogs: true,
     },
   });
 };
@@ -34,11 +33,3 @@ export const updateTaskStatus = async (taskId: string, newStatus: string) => {
   });
 };
 
-export const addActivityLog = async (taskId: string, message: string) => {
-  return prisma.activityLog.create({
-    data: {
-      taskId,
-      message,
-    },
-  });
-};

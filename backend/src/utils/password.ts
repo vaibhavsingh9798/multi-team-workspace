@@ -1,4 +1,4 @@
-// backend/src/utils/password.ts
+
 
 import bcrypt from 'bcrypt';
 

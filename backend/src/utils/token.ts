@@ -11,7 +11,7 @@ const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN;
 const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET;
 const REFRESH_TOKEN_EXPIRES_IN = process.env.REFRESH_TOKEN_EXPIRES_IN;
 
-console.log("JWT_SECRET", JWT_SECRET)
+
 
 if (!JWT_SECRET || !JWT_EXPIRES_IN || !REFRESH_TOKEN_SECRET || !REFRESH_TOKEN_EXPIRES_IN) {
   throw new Error('Missing required environment variables for JWT');
