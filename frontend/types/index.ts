@@ -5,6 +5,7 @@ export interface User {
   name: string;
   email: string;
   companies: CompanyUser[];
+  Role  :  "OWNER" | "MANAGER" | "MEMBER";
 }
 
 export interface Company {

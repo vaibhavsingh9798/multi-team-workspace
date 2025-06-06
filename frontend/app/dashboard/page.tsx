@@ -1,22 +1,56 @@
 "use client";
-import { useEffect, useState } from "react";
-import { fetchCompanies } from "@/lib/api";
 
-export default function DashboardPage() {
-  const [companies, setCompanies] = useState([]);
+import React, { useEffect, useState } from "react";
+import { useAuth } from "@/context/AuthProvider";
+import axios from "@/lib/axios";
+import { useRouter } from "next/navigation";
+
+interface Project {
+  id: string;
+  name: string;
+  description?: string;
+}
+
+export default function Dashboard() {
+  const { selectedCompany } = useAuth();
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
-    fetchCompanies().then(setCompanies);
-  }, []);
+    if (!selectedCompany) return;
+    setLoading(true);
+    axios
+      .get(`/companies/${selectedCompany.id}/projects`)
+      .then((res) => {
+        setProjects(res.data);
+      })
+      .catch((err) => console.error(err))
+      .finally(() => setLoading(false));
+  }, [selectedCompany]);
+
+  if (!selectedCompany) return <div>Please select a company</div>;
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Company Dashboard</h1>
-      <ul className="space-y-2">
-        {companies.map((c: any) => (
-          <li key={c.id} className="p-4 bg-white shadow rounded">{c.name}</li>
-        ))}
-      </ul>
+      <h1 className="text-2xl font-bold mb-4">{selectedCompany.name} Projects</h1>
+      {loading ? (
+        <p>Loading projects...</p>
+      ) : projects.length ? (
+        <ul>
+          {projects.map((project) => (
+            <li
+              key={project.id}
+              className="p-3 mb-2 cursor-pointer border rounded hover:bg-gray-100"
+              onClick={() => router.push(`/project/${project.id}`)}
+            >
+              {project.name}
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p>No projects found</p>
+      )}
     </div>
   );
 }

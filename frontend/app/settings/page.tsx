@@ -1,43 +1,87 @@
 "use client";
+
 import { useEffect, useState } from "react";
-import { fetchUsersInCompany, updateRole } from "@/lib/api";
+import axios from "@/lib/axios";
+import { useAuth } from "@/context/AuthProvider";
+import { User } from "@/types";
 
 export default function SettingsPage() {
-  const [users, setUsers] = useState([]);
+  const { user, token } = useAuth();
+  const [companyUsers, setCompanyUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedCompanyId, setSelectedCompanyId] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchUsersInCompany().then(setUsers);
-  }, []);
+    if (user && user.companies.length > 0) {
+      setSelectedCompanyId(user.companies[0].companyId);
+    }
+  }, [user]);
 
-  const handleRoleChange = (userId: string, role: string) => {
-    updateRole(userId, role).then(() => {
-      setUsers((prev: any[]) =>
+  useEffect(() => {
+    if (!selectedCompanyId) return;
+
+    const fetchCompanyUsers = async () => {
+      try {
+        const res = await axios.get(`/companies/${selectedCompanyId}/users`);
+        setCompanyUsers(res.data);
+      } catch (err) {
+        console.error("Failed to load company users", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCompanyUsers();
+  }, [selectedCompanyId]);
+
+  const handleRoleChange = async (userId: string, role: string) => {
+    try {
+      await axios.put(`/companies/${selectedCompanyId}/users/${userId}/role`, {
+        role,
+      });
+      setCompanyUsers((prev) =>
         prev.map((u) => (u.id === userId ? { ...u, role } : u))
       );
-    });
+    } catch (err) {
+      console.error("Failed to update role", err);
+    }
   };
+
+  if (loading) return <p>Loading...</p>;
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">User Settings & Permissions</h1>
-      <ul className="space-y-4">
-        {users.map((user: any) => (
-          <li key={user.id} className="bg-white p-4 shadow rounded">
-            <div className="flex justify-between">
-              <span>{user.name}</span>
-              <select
-                value={user.role}
-                onChange={(e) => handleRoleChange(user.id, e.target.value)}
-                className="border p-1"
-              >
-                <option value="OWNER">Owner</option>
-                <option value="MANAGER">Manager</option>
-                <option value="MEMBER">Member</option>
-              </select>
-            </div>
-          </li>
-        ))}
-      </ul>
+      <h1 className="text-xl font-semibold mb-4">User Settings</h1>
+      <table className="w-full border">
+        <thead>
+          <tr>
+            <th className="border p-2">Name</th>
+            <th className="border p-2">Email</th>
+            <th className="border p-2">Role</th>
+            <th className="border p-2">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {companyUsers.map((member) => (
+            <tr key={member.id}>
+              <td className="border p-2">{member.name}</td>
+              <td className="border p-2">{member.email}</td>
+              <td className="border p-2">{member.Role}</td>
+              <td className="border p-2">
+                <select
+                  className="border p-1"
+                  value={member.Role}
+                  onChange={(e) => handleRoleChange(member.id, e.target.value)}
+                >
+                  <option value="OWNER">Owner</option>
+                  <option value="MANAGER">Manager</option>
+                  <option value="MEMBER">Member</option>
+                </select>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }
